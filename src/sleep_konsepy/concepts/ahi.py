@@ -22,7 +22,7 @@ of = r'(?:of|is|was)'
 # events per hour of sleep
 events = rf'(?:(?:events{WS})?(?:(?:per|an|/){WS})?(?:(?:hour|hr){WS})(?:of\W*sleep)?)'
 
-ahi = fr'(?:p?ahi|apnea{WS}hypopnea{WS}index)'
+ahi = fr'(?:p?ahi|apno?ea{WS}hypopnn?o?ea{WS}index)'
 ahi3 = rf'{ahi}{WS}3%'
 ahi4 = rf'{ahi}{WS}4%'
 
