@@ -5,7 +5,7 @@ from konsepy.rxsearch import search_all_regex_func
 from konsepy.rxutils import rx_compile
 
 
-class EssCategory(enum.Enum):
+class GenericEss(enum.Enum):
     UNKNOWN = -1
     NO = 0
     ESS = 1
@@ -32,7 +32,7 @@ ESS_PAT = rx_compile(
 )
 
 REGEXES = [
-    (ESS_PAT, EssCategory.ESS, []),
+    (ESS_PAT, GenericEss.ESS, []),
 ]
 
 RUN_REGEXES_FUNC = search_all_regex_func(REGEXES)

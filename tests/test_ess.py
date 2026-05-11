@@ -1,6 +1,6 @@
 import pytest
 
-from sleep_konsepy.concepts.ess import ESS_PAT
+from sleep_konsepy.concepts.generic_ess import ESS_PAT
 from tests.utils import check_pattern
 
 

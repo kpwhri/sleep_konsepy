@@ -1,6 +1,6 @@
 import pytest
 
-from sleep_konsepy.concepts.ahi import AHI3_PAT, AHI4_PAT, AHI_PAT
+from sleep_konsepy.concepts.generic_ahi import AHI3_PAT, AHI4_PAT, AHI_PAT
 from utils import check_pattern
 
 

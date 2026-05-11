@@ -5,7 +5,7 @@ from konsepy.rxsearch import search_all_regex_func
 from konsepy.rxutils import rx_compile
 
 
-class AhiCategory(enum.Enum):
+class GenericAhi(enum.Enum):
     UNKNOWN = -1
     NO = 0
     AHI = 1
@@ -58,9 +58,9 @@ AHI_PAT = rx_compile(
 )
 
 REGEXES = [
-    (AHI_PAT, AhiCategory.AHI, []),
-    (AHI3_PAT, AhiCategory.AHI3, []),
-    (AHI4_PAT, AhiCategory.AHI4, []),
+    (AHI_PAT, GenericAhi.AHI, []),
+    (AHI3_PAT, GenericAhi.AHI3, []),
+    (AHI4_PAT, GenericAhi.AHI4, []),
 ]
 
 RUN_REGEXES_FUNC = search_all_regex_func(REGEXES)
