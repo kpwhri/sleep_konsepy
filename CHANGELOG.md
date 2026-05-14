@@ -18,35 +18,7 @@ Types of changes:
 
 ## [Unreleased]
 
-## [0.3.0] - 2026-01-30
-
 ### Added
 
-* More documentation, `pyproject.toml`
-
-### Changed
-
-* Updated compatibility to version 0.3.0 of `konsepy`
-
-## [0.1.0]
-
-### Added
-
-* `this`
-* demo on developing simple NLP for social support
-* `corpus_lined.csv` with README explaining the examples
-* Added new option for running all concepts while excluding aggregate output
-
-### Fixed
-
-* Bug in `run_concepts` which supplied `package_name` parameter twice
-
-### Changed
-
-* Update to meet requirements of `konsepy 0.1.0`
-
-[unreleased]: https://github.com/kpwhri/konsepy_nlp_template/compare/v0.3.0...HEAD
-
-[0.3.0]: https://github.com/kpwhri/konsepy_nlp_template/compare/0.1.0...v0.3.0
-
-[0.1.0]: https://github.com/kpwhri/konsepy_nlp_template/releases/0.1.0
+* Baseline AHI/ESS implementations
+* Custom/local implementation

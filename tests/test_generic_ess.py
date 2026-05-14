@@ -1,7 +1,7 @@
 import pytest
 
 from sleep_konsepy.concepts.generic_ess import ESS_PAT
-from tests.utils import check_pattern
+from utils import check_pattern
 
 
 @pytest.mark.parametrize('sentence, expected_val', [

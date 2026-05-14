@@ -1,11 +1,11 @@
 import enum
 import re
 
-from konsepy.rxsearch import search_all_regex_func
+from konsepy.rxsearch import extract_all_regex_target
 from konsepy.rxutils import rx_compile
 
 
-class GenericAhi(enum.Enum):
+class Ahi(enum.Enum):
     UNKNOWN = -1
     NO = 0
     AHI = 1
@@ -17,7 +17,7 @@ WS = r'[\s(),=:/-]*'  # no %
 
 pre = r'(?:overall|total)'
 value = r'\d+(?:\.\d+)?'
-value_capture = rf'(?P<val>{value})'
+value_capture = rf'(?P<target>{value})'
 of = r'(?:of|is|was)'
 # events per hour of sleep
 events = rf'(?:(?:events{WS})?(?:(?:per|an|/){WS})?(?:(?:hour|hr){WS})(?:of\W*sleep)?)'
@@ -58,9 +58,9 @@ AHI_PAT = rx_compile(
 )
 
 REGEXES = [
-    (AHI_PAT, GenericAhi.AHI, []),
-    (AHI3_PAT, GenericAhi.AHI3, []),
-    (AHI4_PAT, GenericAhi.AHI4, []),
+    (AHI_PAT, Ahi.AHI, []),
+    (AHI3_PAT, Ahi.AHI3, []),
+    (AHI4_PAT, Ahi.AHI4, []),
 ]
 
-RUN_REGEXES_FUNC = search_all_regex_func(REGEXES)
+RUN_REGEXES_FUNC = extract_all_regex_target(REGEXES)
