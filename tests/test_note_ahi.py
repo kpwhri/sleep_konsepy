@@ -8,7 +8,7 @@ from sleep_konsepy.concepts.note_ahi import RUN_REGEXES_FUNC
 
 @pytest.mark.parametrize('text, exp', [
     ('Respiratory Indices\npAHI 30.5\nODI 20.5', 30.5,),
-    ('Summary & Diagnosis:\nPatient\'s study demonstrates sleep apnea with pAHI of 30 wich was associated\nRecommendatons:', 30),
+    ('Summary & Diagnosis:\nPatient\'s study demonstrates sleep apnea with pAHI of 30 wich was associated\nRecommendations:', 30),
     ('Apneas + hypopneas (AHI) >> 30.5 per hour', 30.5),
     ('Results:\np rdi p ahi\n10.2 30.5\nOxygen Saturation', 30.5),
     ('Overall AHI is at the blah blah blah 30.5/hr', 30.5),

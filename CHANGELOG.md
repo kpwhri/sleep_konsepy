@@ -22,3 +22,4 @@ Types of changes:
 
 * Baseline AHI/ESS implementations
 * Custom/local implementation
+* Extensive testing

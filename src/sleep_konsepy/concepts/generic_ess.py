@@ -5,7 +5,7 @@ from konsepy.rxsearch import extract_all_regex_target
 from konsepy.rxutils import rx_compile
 
 
-class GenericAhi(enum.Enum):
+class GenericEss(enum.Enum):
     UNKNOWN = -1
     NO = 0
     ESS = 1

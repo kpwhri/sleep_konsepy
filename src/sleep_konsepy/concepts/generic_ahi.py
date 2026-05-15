@@ -4,6 +4,8 @@ import re
 from konsepy.rxsearch import extract_all_regex_target
 from konsepy.rxutils import rx_compile
 
+from sleep_konsepy.shared_patterns import is_not_overall_ahi
+
 
 class Ahi(enum.Enum):
     UNKNOWN = -1
@@ -58,9 +60,9 @@ AHI_PAT = rx_compile(
 )
 
 REGEXES = [
-    (AHI_PAT, Ahi.AHI, []),
-    (AHI3_PAT, Ahi.AHI3, []),
-    (AHI4_PAT, Ahi.AHI4, []),
+    (AHI_PAT, Ahi.AHI, [is_not_overall_ahi]),
+    (AHI3_PAT, Ahi.AHI3, [is_not_overall_ahi]),
+    (AHI4_PAT, Ahi.AHI4, [is_not_overall_ahi]),
 ]
 
 RUN_REGEXES_FUNC = extract_all_regex_target(REGEXES)

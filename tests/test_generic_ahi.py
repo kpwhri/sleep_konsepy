@@ -1,6 +1,6 @@
 import pytest
 
-from sleep_konsepy.concepts.generic_ahi import AHI3_PAT, AHI4_PAT, AHI_PAT
+from sleep_konsepy.concepts.generic_ahi import AHI3_PAT, AHI4_PAT, AHI_PAT, RUN_REGEXES_FUNC
 from utils import check_pattern
 
 
@@ -65,3 +65,13 @@ def test_ahi4_patterns(sentence, expected_val):
 ])
 def test_ahi_patterns(sentence, expected_val):
     assert check_pattern(sentence, expected_val, AHI_PAT)
+
+
+@pytest.mark.parametrize('text', [
+    'REM AHI: 11.1',
+    'lateral AHI 12.3',
+    'residual AHI - 14.5',
+])
+def test_negative_ahi(text):
+    results = list(RUN_REGEXES_FUNC(text))
+    assert len(results) == 0
