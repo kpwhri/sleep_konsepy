@@ -16,9 +16,6 @@ not_overall_ahi_pat = re.compile(
 
 def is_not_overall_ahi(*, precontext, **_):
     current_sentence = precontext.split('.')[-1]
-    print(precontext)
-    print(current_sentence)
-    print(not_overall_ahi_pat.search(current_sentence))
     if not_overall_ahi_pat.search(current_sentence):
         return SKIP
     return None
