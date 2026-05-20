@@ -12,6 +12,7 @@ from konsepy.rxsearch import extract_first_regex_target
 
 class NoteAhi(IntEnum):
     UNKNOWN = -1
+    YES = 1
 
 
 target = r'(?P<target>\d+(?:\.\d+)?)'
@@ -54,53 +55,53 @@ def pre_res_oxysat(text):
 REGEXES = [
     (
         re.compile(rf'p rdi p ahi.*?\d+(?:\.\d+)?\s*{target}', re.I | re.DOTALL),
-        None,
+        NoteAhi.YES,
         None,
         pre_res_oxysat,
     ),
     (
         re.compile(rf'The pAHI was {target}'),
-        None,
+        NoteAhi.YES,
         None,
         pre_watchpat_sleep_study,
     ),
     (
         re.compile(rf'with\s*pAHI\s*of\s*{target}'),
-        None,
+        NoteAhi.YES,
         None,
         pre_sumdx_recommend,
     ),
     (
         re.compile(rf'(?:an AHI of|pAHI\W*)\s*{target}', re.I),
-        None,
+        NoteAhi.YES,
         None,
         pre_find_impress,
     ),
     (
         re.compile(rf'p?AHI\s*(?:{of_is_at_was}\s*)?{target}'),
-        None,
+        NoteAhi.YES,
         None,
         pre_impress_recommend,
     ),
     (
         re.compile(rf'respiratory\s*indices\s*pahi\s*{target}', re.I),
-        None,
+        NoteAhi.YES,
     ),
     (
         re.compile(rf'\bp?ahi\W*{target}\W*{per_hour}', re.I),
-        None,
+        NoteAhi.YES,
     ),
     (
         re.compile(rf'overall\s*p?ahi\s+(?:\w+\s+){{,10}}{target}\W*{per_hour}', re.I),
-        None,
+        NoteAhi.YES,
     ),
     (
         re.compile(rf'overall\s*p?ahi\s+{of_is_at_was}\s*{target}', re.I),
-        None,
+        NoteAhi.YES,
     ),
     (
         re.compile(rf'sleep\s*study\s*results\s*performed.*?AHI\s*{target}', re.I),
-        None,
+        NoteAhi.YES,
     ),
 ]
 

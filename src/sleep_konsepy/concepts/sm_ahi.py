@@ -10,6 +10,7 @@ from konsepy.rxsearch import extract_first_regex_target
 
 class SmAhi(IntEnum):
     UNKNOWN = -1
+    YES = 1
 
 
 def pre_unattended_sleep_study_findings(text):
@@ -25,7 +26,7 @@ target = r'(?P<target>\d+(?:\.\d+)?)'
 REGEXES = [
     (
         re.compile(r'PAHI\s*of\s*(?P<target>\d+(?:\.\d+)?)'),
-        None,
+        SmAhi.YES,
         None,
         pre_unattended_sleep_study_findings,
     ),
@@ -49,7 +50,7 @@ REGEXES = [
             r'(?! to \d)',  # exclude range like 'AHI = 0 to 5'
             re.I,
         ),
-        None,
+        SmAhi.YES,
     ),
     (
         re.compile(
@@ -60,7 +61,7 @@ REGEXES = [
             r'(?:obstructive breathing events)?',
             re.I,
         ),
-        None,
+        SmAhi.YES,
     ),
 ]
 
