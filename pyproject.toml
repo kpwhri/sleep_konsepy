@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Konsepy NLP for extracting sleep scores (mostly AHI)."
 requires-python = ">=3.11"
 dependencies = [
-    "konsepy>=0.5.8",
+    "konsepy>=0.6.0",
 ]
 
 [dependency-groups]
