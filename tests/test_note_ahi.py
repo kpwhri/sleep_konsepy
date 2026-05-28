@@ -13,8 +13,12 @@ from sleep_konsepy.concepts.note_ahi import RUN_REGEXES_FUNC
     ('Results:\np rdi p ahi\n10.2 30.5\nOxygen Saturation', 30.5),
     ('Overall AHI is at the blah blah blah 30.5/hr', 30.5),
     ('sleep study results performed on 01/01/2020 (AHI 30.5', 30.5),
+    ('preliminary home sleep study performed with the WatchPAT on 01/01/2020 results (pAHI 30.5 (pAHI 5 supine',
+     30.5),
+    ('preliminary baseline sleep study performed with the WatchPAT on 1/1/2020 results (pAHI 30.5 (pAHI 5 supine',
+     30.5),
 ])
-def test_sm_ahi_all(text, exp):
+def test_note_ahi_all(text, exp):
     results = list(RUN_REGEXES_FUNC(text))
     if exp is None:
         assert len(results) == 0

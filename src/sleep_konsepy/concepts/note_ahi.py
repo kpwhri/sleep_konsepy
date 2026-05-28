@@ -54,6 +54,14 @@ def pre_res_oxysat(text):
 
 REGEXES = [
     (
+        re.compile(
+            rf'preliminary\W*(?:home|baseline)\W*sleep\W*study'
+            rf'\W*performed\W*with\W*the\W*watchpat\W*on\W*\d+/\d+/\d+\W*results\W*pAHI\W*{target}',
+            re.I,
+        ),
+        NoteAhi.YES,
+    ),
+    (
         re.compile(rf'p rdi p ahi.*?\d+(?:\.\d+)?\s*{target}', re.I | re.DOTALL),
         NoteAhi.YES,
         None,
