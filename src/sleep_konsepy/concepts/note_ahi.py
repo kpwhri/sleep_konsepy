@@ -19,7 +19,7 @@ score = r'\d+(?:\.\d+)?'
 target = rf'(?P<target>{score})'
 
 ahi = fr'(?:p?ahi|apno?ea\W*hypopnn?o?ea\W*index)'
-per_hour = r'(?:events\s*)?(?:per\s*)?(?:hour|hr)'
+per_hour = r'(?:events\s*)?(?:per\s*|/\s*)?(?:hour|hr)'
 of_is_at_was = r'(?:of|is|is\s*at|=|was|at)'
 test_kind = r'(?:preliminary|home|bas\w+|medicare|molina|standard|(?:re\W*)?qualifying|follow\W*up|sleep\s*study)'
 performed = r'(?:performed|completed)'
@@ -52,6 +52,12 @@ def pre_impress_recommend(text):
 
 def pre_res_oxysat(text):
     if m := re.compile(r'results:.*?oxygen\s*saturation', re.I | re.DOTALL).search(text):
+        yield m.start(), m.end()
+    return None
+
+
+def pre_study_conditions(text):
+    if m := re.compile(r'study conditions:.*?(?:results|oxygen saturation)', re.I | re.DOTALL).search(text):
         yield m.start(), m.end()
     return None
 
@@ -91,6 +97,15 @@ REGEXES = [
     ),
     (
         re.compile(
+            rf'PAHI\s*{target}',
+            re.I,
+        ),
+        NoteAhi.YES,
+        None,
+        [pre_study_conditions],
+    ),
+    (
+        re.compile(
             rf'(?:{test_kind}\W*)+watchpat\W*(?:sleep\W*study\W*results\W*)'
             rf'(?:{performed}\W*)?on\W*(?:{DATE}\W*)?p?AHI\W*{target}',
             re.I,
@@ -100,7 +115,7 @@ REGEXES = [
     ),
     (
         re.compile(
-            rf'watchpat\s*study\s*reported\s*an?\s*{ahi}\s*{of_is_at_was}\s*{target}\s*{per_hour}',
+            rf'watchpat\s*study\s*reported\s*an?\s*{ahi}\s*{of_is_at_was}\s*{target}',
             re.I,
         ),
         NoteAhi.YES,
@@ -139,14 +154,36 @@ REGEXES = [
         NoteAhi.YES,
     ),
     (
-        re.compile(rf'p rdi p ahi.*?\d+(?:\.\d+)?\s*{target}', re.I | re.DOTALL),
+        re.compile(rf'p rdi p ahi.*?{score}\s*{target}', re.I | re.DOTALL),
+        NoteAhi.YES,
+        None,
+        pre_res_oxysat,
+    ),
+    (
+        re.compile(
+            rf'p\s*rdi\s*p\s*rdi\s*supine\s*p\s*ahi\s*p\s*ahi\s*supine\s*'
+            rf'{score}\s*{score}\s*{target}',
+            re.I | re.DOTALL),
         NoteAhi.YES,
         None,
         pre_res_oxysat,
     ),
     (
         # exclude 3%
-        re.compile(rf'the\s*pAHI\s*(?:4%\s*)?(?:was|is)\s*{target}', re.I),
+        re.compile(rf'(?:'
+                   rf'the\s*pAHI\s*(?:4%\s*)?(?:was|is)\s*'
+                   rf')'
+                   rf'{target}',
+                   re.I),
+        NoteAhi.YES,
+        [is_not_overall_ahi],
+        pre_watchpat_sleep_study,
+    ),
+    (
+        re.compile(rf'(?:'
+                   rf'|pAHI\s*of\s*{target}\s*and\s*pRDI'
+                   rf')',
+                   re.I),
         NoteAhi.YES,
         [is_not_overall_ahi],
         pre_watchpat_sleep_study,
@@ -162,19 +199,19 @@ REGEXES = [
         NoteAhi.YES,
     ),
     (
-        re.compile(rf'with\s*pAHI\s*of\s*{target}'),
+        re.compile(rf'with\s*(?:a\s*)?pAHI\s*of\s*{target}'),
         NoteAhi.YES,
         [is_not_overall_ahi],
         pre_sumdx_recommend,
     ),
     (
-        re.compile(rf'(?:an AHI of\s*|p?AHI\W*){target}', re.I),
+        re.compile(rf'(?:an AHI of\s*|p?AHI\W*|the\s*ahi\s*is\s*){target}', re.I),
         NoteAhi.YES,
         [is_not_overall_ahi],
         pre_find_impress,
     ),
     (
-        re.compile(rf'p?AHI\s*(?:on\s*this\s*test\s*)?(?:{of_is_at_was}\s*)?{target}'),
+        re.compile(rf'p?AHI\s*(?:on\s*this\s*\w+\s*)?(?:{of_is_at_was}\s*)?{target}'),
         NoteAhi.YES,
         [is_not_overall_ahi],
         pre_impress_recommend,
@@ -217,6 +254,11 @@ REGEXES = [
         [is_not_overall_ahi],
     ),
     (
+        re.compile(rf'watchpat\s*home\s*sleep\s*study\W*p?ahi\W*{target}\s*{per_hour}', re.I),
+        NoteAhi.YES,
+        [is_not_overall_ahi, is_invalid_test_around],
+    ),
+    (
         re.compile(
             rf'p?AHI\s*{target}\s*\('
             rf'(?:'
@@ -226,6 +268,22 @@ REGEXES = [
             re.I),
         NoteAhi.YES,
         [is_invalid_test_around_500_window],
+    ),
+    (
+        re.compile(
+            rf'supine\s*sleep\s*{score}%\s*pahi\s*{target}',
+            re.I
+        ),
+        NoteAhi.YES,
+        [is_invalid_test_around],
+    ),
+    (
+        re.compile(
+            rf'^\W*p?ahi:\s*{target}',
+            re.I
+        ),
+        NoteAhi.YES,
+        [is_invalid_test_around],
     ),
 ]
 

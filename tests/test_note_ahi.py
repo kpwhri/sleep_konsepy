@@ -5,8 +5,7 @@ import pytest
 
 from sleep_konsepy.concepts.note_ahi import RUN_REGEXES_FUNC
 
-text = '''
-'''
+
 @pytest.mark.parametrize('text, exp', [
     ('Respiratory Indices\npAHI 30.5\nODI 20.5', 30.5,),
     ('Respiratory Indices Summary\npAHI 30.5\nODI 20.5', 30.5,),
@@ -15,6 +14,7 @@ text = '''
      30),
     ('Apneas + hypopneas (AHI) >> 30.5 per hour', 30.5),
     ('Results:\np rdi p ahi\n10.2 30.5\nOxygen Saturation', 30.5),
+    ('Results:\np rdi p rdi supine p ahi p ahi supine\n10.2 10.2 30.5 10.2\nOxygen Saturation', 30.5),
     ('Findings:\npahi: >>> 30.5 events per hour\nOxygen Saturation:', 30.5),
     ('Overall AHI is at the blah blah blah 30.5/hr', 30.5),
     ('follow-up sleep study results performed on 01/01/2020 (AHI 30.5', 30.5),
@@ -53,6 +53,7 @@ text = '''
     ('obstructive sleep apnea with an AHI of 20.1', 20.1),
     ('mild obstructive sleep apnea with a baseline AHI of 20.1 events per hour', 20.1),
     ('sleep study\ninterpretation:\nthe pAHI was 20.1 indicating moderate sleep apnea\nrecommendations:\n', 20.1),
+    ('sleep study\ninterpretation:\npAHI of 20.1 and pRDI of 25.3\nrecommendations:\n', 20.1),
     ('sleep study\ninterpretation:\nthe pAHI was 20.1 indicating moderate sleep apnea', 20.1),
     ('sleep study\ninterpretation:\nthe pAHI is 20.1 indicating moderate sleep apnea.'
      ' Central sleep apnea was 30.9\nrecommendations:\n', 20.1),
@@ -62,13 +63,16 @@ text = '''
     ('overall normal pAHI of 20.1', 20.1),
     ('overall 4% pAHI of 20.1; supine pAHI of 25.3', 20.1),
     ('findings:\n pAHI: >>> 20.1 events per hour\nimpression:', 20.1),
+    ('findings:\n the AHI is 20.1, RDI 25.3\nimpression:', 20.1),
     # ensure not negated by REM in prior sections
     ('derived channels: sleep stage (wake vs light nrem vs deep nrem vs rem) findings:\n '
      'pAHI: >>> 20.1 events per hour\nimpression:', 20.1),
     ('overall mildly elevated pAHI of 20.1', 20.1),
     ('overall AHI on this study is still mildly elevated at 20.1', 20.1),
     ('WatchPAT study reported a pAHI of 20 per hour', 20),
-    (text, 6.4),
+    ('supine sleep 80%\npahi 20.1', 20.1),
+    ('study conditions: good\nPRDI 25.3, PAHI 20.1\nresults:', 20.1),
+    ('watchpat home sleep study: AHI 20.1 events/hour:', 20.1),
 ])
 def test_note_ahi_all(text, exp):
     results = list(RUN_REGEXES_FUNC(text))
