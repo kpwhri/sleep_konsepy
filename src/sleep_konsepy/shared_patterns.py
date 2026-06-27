@@ -57,3 +57,9 @@ def is_invalid_test(text):
 
 MONTH = r'\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b'
 DATE = rf'(?:\d+/\W*\d+(?:/\W*\d+)?|\d+\W*{MONTH}(?:\W*\d+)?|{MONTH}\W*\d+(?:\W*\d+)?|\d+)'
+
+
+def pre_find_impress(text):
+    if m := re.compile(r'findings:.*?(?:impression|oxygen\s*saturation)', re.I | re.DOTALL).search(text):
+        yield m.start(), m.end()
+    return None

@@ -7,7 +7,7 @@ from enum import IntEnum
 
 from konsepy.rxsearch import extract_first_regex_target
 
-from sleep_konsepy.shared_patterns import DATE
+from sleep_konsepy.shared_patterns import DATE, is_not_overall_ahi, pre_find_impress, is_invalid_test_around
 
 
 class SmAhi(IntEnum):
@@ -35,6 +35,20 @@ REGEXES = [
         SmAhi.YES,
         None,
         pre_unattended_sleep_study_findings,
+    ),
+    (
+        re.compile(rf'(?:an AHI of\s*|p?AHI\W*){target}', re.I),
+        SmAhi.YES,
+        [is_not_overall_ahi],
+        pre_find_impress,
+    ),
+    (
+        re.compile(
+            rf'obstructive\s*sleep\s*apnea\W*(?:OSA\W*per|with\s*an?)\s*(?:baseline\s*)?p?AHI(?:\W*|\s*of\s*){target}',
+            re.I,
+        ),
+        SmAhi.YES,
+        [is_invalid_test_around],
     ),
     (
         re.compile(rf'overall\s*pahi\s*{of_is_at_was}\s*{target}'),

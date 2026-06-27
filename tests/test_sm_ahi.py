@@ -15,6 +15,9 @@ from sleep_konsepy.concepts.sm_ahi import RUN_REGEXES_FUNC
     ('AHI = 0 to 5 Normal range', None),
     ('you had an average of about 20.1 apneas', 20.1),
     ('you had an average of between 20 and 21 apneas', 21),
+    ('in 2000 with an AHI of 30.5 events per hour\nfindings:\n pAHI: >>> 20.1 events per hour\nimpression:', 20.1),
+    ('findings:\npAHI:»»»20.1 events per hour\noxygen saturation:', 20.1),
+    ('sleep apnea with a baseline AHI of 20.1 events per hour', 20.1),
 ])
 def test_sm_ahi_all(text, exp):
     results = list(RUN_REGEXES_FUNC(text))
