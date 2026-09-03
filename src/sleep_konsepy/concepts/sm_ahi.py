@@ -5,9 +5,10 @@ Secure message patterns for AHI.
 import re
 from enum import IntEnum
 
-from konsepy.rxsearch import extract_first_regex_target
+from konsepy.rxsearch import extract_first_regex_target, extract_all_regex_target
 
-from sleep_konsepy.shared_patterns import DATE, is_not_overall_ahi, pre_find_impress, is_invalid_test_around
+from sleep_konsepy.shared_patterns import DATE, is_not_overall_ahi, pre_find_impress, is_invalid_test_around, \
+    has_date_prefix
 
 
 class SmAhi(IntEnum):
@@ -22,7 +23,7 @@ def pre_unattended_sleep_study_findings(text):
     return None
 
 
-score = r'\d+(?:\.\d+)?'
+score = r'\b\d+(?:\.\d+)?\b'
 target = rf'(?P<target>{score})'
 
 of_is_at_was = r'(?:of|is|is\s*at|=|was|at)'
@@ -31,7 +32,7 @@ events = r'(?:apne\w*|pause|obstr\w*|respiratory|events|period|episode|interrupt
 
 REGEXES = [
     (
-        re.compile(r'PAHI\s*of\s*(?P<target>\d+(?:\.\d+)?)'),
+        re.compile(r'\bPAHI\s*of\s*(?P<target>\d+(?:\.\d+)?)'),
         SmAhi.YES,
         None,
         pre_unattended_sleep_study_findings,
@@ -48,11 +49,12 @@ REGEXES = [
             re.I,
         ),
         SmAhi.YES,
-        [is_invalid_test_around],
+        [is_invalid_test_around, has_date_prefix],
     ),
     (
         re.compile(rf'overall\s*pahi\s*{of_is_at_was}\s*{target}'),
-        None,
+        SmAhi.YES,
+        [has_date_prefix],
     ),
     (
         re.compile(
@@ -71,6 +73,7 @@ REGEXES = [
             re.I,
         ),
         SmAhi.YES,
+        [is_invalid_test_around],
     ),
     (  # watchpat on 1/1/2001 (pahi 20.1)
         re.compile(
@@ -90,17 +93,21 @@ REGEXES = [
             r'|(?:apnea|ahi)(?:\W*(?:an?|average|index|score|hypopnea|events?|rate))*'
             r'|(?:stopped\W*breathing|airway\W*close\s*s)\W*an\W*average'
             r')'
-            r'\W*'
+            r'[\s\-=:]*'
             r'(?:\(.*?\))?'
-            r'\W*'
+            r'[\s\-=:]*'
             rf'{of_is_at_was}?'
-            r'\W*'
+            r'[\s\-=:]*'
             rf'{target}'
-            r'(?! to \d)',  # exclude range like 'AHI = 0 to 5'
+            r'(?!-)'
+            r'(?! to \d)'  # exclude range like 'AHI = 0 to 5'
+            r'(?! t o \d)',  # exclude range like 'AHI = 0 to 5'
             re.I,
         ),
         SmAhi.YES,
+        [is_not_overall_ahi, has_date_prefix],
     ),
 ]
 
 RUN_REGEXES_FUNC = extract_first_regex_target(REGEXES)
+# RUN_REGEXES_FUNC = extract_all_regex_target(REGEXES)

@@ -6,10 +6,11 @@ import re
 from konsepy.rxsearch import SKIP
 
 not_overall_ahi_pat = re.compile(
-    r'(?:'
+    r'\b(?:'
     r'rem|supine|non\W*supine|prone|lateral|residual'
-    r'|upright|sitting|central|side'
-    r')',
+    r'|upright|sitting|central|sides?|back|non\W*back'
+    r'|other\s*p\s?ositions?'
+    r')\b',
     re.I,
 )
 
@@ -21,9 +22,23 @@ invalid_test_pat = re.compile(
     r'|appliance'
     r'|therapy'
     r'|\bno\s+snore\b|dental\s+device'
+    r'|\b(?:bi|c|a)pap\b'
     r')',
     re.I,
 )
+
+has_date_pat = re.compile(
+    r'\b(?:(?:20|19)\d{2}|/\d{2}|previous|prior|last|ago)\b',
+    re.I,
+)
+
+
+def has_date_prefix(*, m, text, postcontext, **_):
+    if has_date_pat.search(text[max(0, m.start()-75):]):
+        return SKIP
+    elif has_date_pat.search(postcontext):
+        return SKIP
+    return None
 
 
 def is_not_overall_ahi(*, precontext, **_):

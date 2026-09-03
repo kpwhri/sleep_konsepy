@@ -73,6 +73,9 @@ from sleep_konsepy.concepts.note_ahi import RUN_REGEXES_FUNC
     ('supine sleep 80%\npahi 20.1', 20.1),
     ('study conditions: good\nPRDI 25.3, PAHI 20.1\nresults:', 20.1),
     ('watchpat home sleep study: AHI 20.1 events/hour:', 20.1),
+    ('1999, overall ahi of 20.1', None),
+    ('mild obstructive sleep apnea with an AHI of 20 events per hour diagnosed in 1999', None),
+    ('Previous sleep study on 1/1/1999, overall AHI of 20.1', None),
 ])
 def test_note_ahi_all(text, exp):
     results = list(RUN_REGEXES_FUNC(text))

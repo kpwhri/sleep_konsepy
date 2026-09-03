@@ -4,10 +4,10 @@ Secure message patterns for AHI.
 import re
 from enum import IntEnum
 
-from konsepy.rxsearch import extract_first_regex_target
+from konsepy.rxsearch import extract_first_regex_target, extract_all_regex_target
 
 from sleep_konsepy.shared_patterns import is_not_overall_ahi, is_invalid_test_around, DATE, \
-    is_invalid_test_around_500_window, pre_find_impress
+    is_invalid_test_around_500_window, pre_find_impress, has_date_prefix
 
 
 class NoteAhi(IntEnum):
@@ -15,7 +15,7 @@ class NoteAhi(IntEnum):
     YES = 1
 
 
-score = r'\d+(?:\.\d+)?'
+score = r'\b\d+(?:\.\d+)?\b'
 target = rf'(?P<target>{score})'
 
 ahi = fr'(?:p?ahi|apno?ea\W*hypopnn?o?ea\W*index)'
@@ -97,7 +97,7 @@ REGEXES = [
     ),
     (
         re.compile(
-            rf'PAHI\s*{target}',
+            rf'\bPAHI\s*{target}',
             re.I,
         ),
         NoteAhi.YES,
@@ -136,7 +136,7 @@ REGEXES = [
             re.I,
         ),
         NoteAhi.YES,
-        [is_invalid_test_around],
+        [is_invalid_test_around, has_date_prefix],
     ),
     (
         re.compile(
@@ -148,7 +148,7 @@ REGEXES = [
     ),
     (
         re.compile(
-            rf'(?:overall|total)\W*prdi\W*of\W*{score}\W*and\W*pahi\W*of\W*{target}',
+            rf'(?:overall|total)\W*prdi\W*of\W*{score}\W*(?:and\W*)?pahi\W*of\W*{target}',
             re.I,
         ),
         NoteAhi.YES,
@@ -176,12 +176,12 @@ REGEXES = [
                    rf'{target}',
                    re.I),
         NoteAhi.YES,
-        [is_not_overall_ahi],
+        [is_not_overall_ahi, has_date_prefix],
         pre_watchpat_sleep_study,
     ),
     (
         re.compile(rf'(?:'
-                   rf'|pAHI\s*of\s*{target}\s*and\s*pRDI'
+                   rf'\bpAHI\s*of\s*{target}\s*and\s*pRDI'
                    rf')',
                    re.I),
         NoteAhi.YES,
@@ -201,19 +201,19 @@ REGEXES = [
     (
         re.compile(rf'with\s*(?:a\s*)?pAHI\s*of\s*{target}'),
         NoteAhi.YES,
-        [is_not_overall_ahi],
+        [is_not_overall_ahi, has_date_prefix],
         pre_sumdx_recommend,
     ),
     (
-        re.compile(rf'(?:an AHI of\s*|p?AHI\W*|the\s*ahi\s*is\s*){target}', re.I),
+        re.compile(rf'\b(?:an AHI of\s*|p?AHI\W*|the\s*ahi\s*is\s*){target}', re.I),
         NoteAhi.YES,
-        [is_not_overall_ahi],
+        [is_not_overall_ahi, has_date_prefix],
         pre_find_impress,
     ),
     (
-        re.compile(rf'p?AHI\s*(?:on\s*this\s*\w+\s*)?(?:{of_is_at_was}\s*)?{target}'),
+        re.compile(rf'\bp?AHI\s*(?:on\s*this\s*\w+\s*)?(?:{of_is_at_was}\s*)?{target}'),
         NoteAhi.YES,
-        [is_not_overall_ahi],
+        [is_not_overall_ahi, has_date_prefix],
         pre_impress_recommend,
     ),
     (
@@ -223,13 +223,14 @@ REGEXES = [
     (
         re.compile(rf'\bp?ahi\W*{target}\W*{per_hour}', re.I),
         NoteAhi.YES,
-        [is_not_overall_ahi],
+        [is_not_overall_ahi, has_date_prefix],
     ),
     (
         re.compile(
             rf'overall\s*(?:(?:normal|mild|moderate|severe|elevated|4%)\w*\s*)*{ahi}\s+{of_is_at_was}\s*{target}',
             re.I),
         NoteAhi.YES,
+        [has_date_prefix],
     ),
     (
         re.compile(
@@ -238,10 +239,12 @@ REGEXES = [
             rf'{of_is_at_was}\s*{target}',
             re.I),
         NoteAhi.YES,
+        [has_date_prefix],
     ),
     (
         re.compile(rf'overall\s*{ahi}\s+(?:\w+\s+){{,10}}{target}\W*{per_hour}', re.I),
         NoteAhi.YES,
+        [has_date_prefix],
     ),
     (
         re.compile(rf'apnea/hypopnea\W*index\W*is\W*{target}\W*{per_hour}', re.I),
@@ -260,7 +263,7 @@ REGEXES = [
     ),
     (
         re.compile(
-            rf'p?AHI\s*{target}\s*\('
+            rf'\bp?AHI\s*{target}\s*\('
             rf'(?:'
             rf'(?:p?AHI\s*)?\d+(?:\.\d+)?\s*supine'
             rf'|supine\s*(?:pahi\s*)?\d+(?:\.\d+)?'
@@ -283,8 +286,9 @@ REGEXES = [
             re.I
         ),
         NoteAhi.YES,
-        [is_invalid_test_around],
+        [is_invalid_test_around, has_date_prefix],
     ),
 ]
 
 RUN_REGEXES_FUNC = extract_first_regex_target(REGEXES)
+# RUN_REGEXES_FUNC = extract_all_regex_target(REGEXES)

@@ -18,6 +18,17 @@ from sleep_konsepy.concepts.sm_ahi import RUN_REGEXES_FUNC
     ('in 2000 with an AHI of 30.5 events per hour\nfindings:\n pAHI: >>> 20.1 events per hour\nimpression:', 20.1),
     ('findings:\npAHI:»»»20.1 events per hour\noxygen saturation:', 20.1),
     ('sleep apnea with a baseline AHI of 20.1 events per hour', 20.1),
+    ('your back AHI was 20.1 events per hour', None),
+    ('non-back AHI was 20.1 events per hour', None),
+    ('Normal is AHI less than 5', None),
+    ('Mild sleep apnea is AHI 5 to 15', None),
+    ('Moderate sleep apnea is AHI 15 to 30', None),
+    ('severe sleep apnea is AHI over 30', None),
+    ('AHI > 30 severe sleep apnea', None),
+    ('normal AHI is <5', None),
+    ('Apnea/Hypopnea Index (AHI) (which is the sleep apnea event rate) of 20.1 events per hour', 20.1),
+    ('1999: This led to an overall PAHI of 20.1', None),
+    ('AHI 15-65', None),
 ])
 def test_sm_ahi_all(text, exp):
     results = list(RUN_REGEXES_FUNC(text))
