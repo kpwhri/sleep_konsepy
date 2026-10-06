@@ -11,3 +11,15 @@ def check_pattern(sentence, expected_val, *patterns):
                 print(f'Found unexpected: {m.group("target")}.')
         print(f'Pattern not found: {pat}')
     return found
+
+
+def impres_recom(text: str):
+    return f'\nImpression:\n{text}\nRecommendation:\n'
+
+
+def res_oxysat(text: str):
+    return f'\nResults:\n{text}\nOxygen saturation\n'
+
+
+def find_impres(text: str):
+    return f'\nFindings:\n{text}\nImpression:\n'

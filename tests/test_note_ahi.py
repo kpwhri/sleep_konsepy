@@ -4,6 +4,7 @@ Testing secure message patterns for AHI.
 import pytest
 
 from sleep_konsepy.concepts.note_ahi import RUN_REGEXES_FUNC
+from tests.utils import impres_recom, res_oxysat, find_impres
 
 
 @pytest.mark.parametrize('text, exp', [
@@ -78,6 +79,17 @@ from sleep_konsepy.concepts.note_ahi import RUN_REGEXES_FUNC
     ('mild obstructive sleep apnea with an AHI of 20.1 events', 20.1),
     ('Previous sleep study on 1/1/1999, overall AHI of 20.1', None),
     ('Preliminary home sleep study performed with the WatchPAT on 1/1/1999 results (pAHI 20.1 (pHI 12.2 supine', 20.1),
+    (impres_recom('rare obstructive breathing events (AHI normal at 2.1)'), 2.1),
+    ('AHI 20.1 overall', 20.1),
+    ('(AHI 20.1 overall, 19 central?)', 20.1),
+    ('Indication: Moderate OSA (AHI 20.1)', 20.1),
+    ('Results:\nAHI 20.1\nOxygenation:', 20.1),
+    ('recent sleep study on 1/1/1999: moderate obstructive sleep apnea with AHI of 20.1', 20.1),
+    ('recent sleep study on 1/1/1999: moderate obstructive sleep apnea with AHI of 20.1', 20.1),
+    ('sleep disordered breathing was observed with an AHI of 20/hr', 20),
+    (res_oxysat('p rdi p rdi supine p ahi p ahi supine\n22. 22.1 20.1 19\n'), 20.1),
+    ('sleep study did not demonstrate obstructive sleep apnea with an AHI of 2.1 events per hour', 2.1),
+    (find_impres('AHI is severly increased at 20.1/hr'), 20.1),
 ])
 def test_note_ahi_all(text, exp):
     results = list(RUN_REGEXES_FUNC(text))
