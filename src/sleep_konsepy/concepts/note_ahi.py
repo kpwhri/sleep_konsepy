@@ -22,8 +22,8 @@ ahi = fr'(?:p?ahi|apno?ea\W*hypopnn?o?ea\W*index)'
 per_hour = r'(?:events\s*)?(?:per\s*|/\s*)?(?:hour|hr)'
 of_is_at_was = r'(?:of|is|is\s*at|=|was|at)'
 test_kind = r'(?:preliminary|home|bas\w+|medicare|molina|standard|(?:re\W*)?qualifying|follow\W*up|sleep\s*study)'
-performed = r'(?:performed|completed)'
-osa = r'(?:obstructive\s*sleep\s*apnea(?:\s*syndrome)|\bosa\b)'
+performed = r'(?:performed|completed|done)'
+osa = r'(?:obstructive\s*sleep\s*apnea(?:\s*syndrome)?|\bosa\b)'
 
 
 def pre_watchpat_sleep_study(text):
@@ -45,7 +45,13 @@ def pre_sumdx_recommend(text):
 
 
 def pre_impress_recommend(text):
-    if m := re.compile(r'impression:.*?(?:recommendations?|plan)', re.I | re.DOTALL).search(text):
+    if m := re.compile(r'impression:.*?(?:recommendations?|plan|chart review)', re.I | re.DOTALL).search(text):
+        yield m.start(), m.end()
+    return None
+
+
+def pre_comments_impress(text):
+    if m := re.compile(r'comments:.*?(?:impression|recommendations?|plan)', re.I | re.DOTALL).search(text):
         yield m.start(), m.end()
     return None
 
@@ -115,6 +121,29 @@ REGEXES = [
     ),
     (
         re.compile(
+            rf'watchpat\W*(?:home\W*sleep\W*study\W*)'
+            rf'(?:{performed}\W*)?on\W*(?:{DATE}\W*)?\W*(?:demonstrated|showed)\W*'
+            rf'(?:(?:mild|severe)\W*)?{osa}\W*'
+            rf'with\W*an?\W*p?ahi\W*of\W*'
+            rf'{target}',
+            re.I,
+        ),
+        NoteAhi.YES,
+        [is_invalid_test_around],
+    ),
+    (
+        re.compile(
+            rf'home\W*sleep\W*study\W*'
+            rf'{performed}\W*'
+            rf'with\W*an?\W*p?ahi\W*of\W*'
+            rf'{target}',
+            re.I,
+        ),
+        NoteAhi.YES,
+        [is_invalid_test_around],
+    ),
+    (
+        re.compile(
             rf'watchpat\s*study\s*reported\s*an?\s*{ahi}\s*{of_is_at_was}\s*{target}',
             re.I,
         ),
@@ -132,7 +161,7 @@ REGEXES = [
     ),
     (
         re.compile(
-            rf'obstructive\s*sleep\s*apnea\W*(?:OSA\W*per|with\s*an?)\s*(?:baseline\s*)?p?AHI(?:\W*|\s*of\s*){target}',
+            rf'(?:obstructive|mild)\s*sleep\s*apnea\W*(?:OSA\W*per|with\s*an?)\s*(?:baseline\s*)?p?AHI(?:\W*|\s*of\s*){target}',
             re.I,
         ),
         NoteAhi.YES,
@@ -140,7 +169,7 @@ REGEXES = [
     ),
     (
         re.compile(
-            rf'indication:\s*(?:mild|moderate|severe)\s*{osa}\s*\(ahi\s*{target}\)',
+            rf'indication:\W*(?:mild|moderate|severe)\s*{osa}\s*\(ahi\s*{target}\)',
             re.I,
         ),
         NoteAhi.YES,
@@ -154,6 +183,12 @@ REGEXES = [
         NoteAhi.YES,
     ),
     (
+        re.compile(rf'AHI *{target}', re.I),
+        NoteAhi.YES,
+        [is_invalid_test_around],
+        pre_res_oxysat,
+    ),
+    (
         re.compile(rf'p rdi p ahi.*?{score}\s*{target}', re.I | re.DOTALL),
         NoteAhi.YES,
         None,
@@ -162,7 +197,16 @@ REGEXES = [
     (
         re.compile(
             rf'p\s*rdi\s*p\s*rdi\s*supine\s*p\s*ahi\s*p\s*ahi\s*supine\s*'
-            rf'{score}\s*{score}\s*{target}',
+            rf'(?:{score}|-+|na)\s*(?:{score}|-+|na)\s*{target}',
+            re.I | re.DOTALL),
+        NoteAhi.YES,
+        None,
+        pre_res_oxysat,
+    ),
+    (
+        re.compile(
+            rf'p\s*rdi\s+p\s*rdi\s+supine\s+p\s*rdi\s+rem\s+p\s*ahi\s+p\s*ahi\s+supine\s+p\s*ahi\s+rem\s+p\s*odi\s+'
+            rf'(?:{score}|-+|na)\s+(?:{score}|-+|na)\s+(?:{score}|-+|na)\s+{target}',
             re.I | re.DOTALL),
         NoteAhi.YES,
         None,
@@ -199,7 +243,7 @@ REGEXES = [
         NoteAhi.YES,
     ),
     (
-        re.compile(rf'with\s*(?:a\s*)?pAHI\s*of\s*{target}'),
+        re.compile(rf'with\s*(?:an?\s*)?p?AHI\s*of\s*{target}'),
         NoteAhi.YES,
         [is_not_overall_ahi, has_date_prefix],
         pre_sumdx_recommend,
@@ -211,10 +255,35 @@ REGEXES = [
         pre_find_impress,
     ),
     (
+        re.compile(rf'Apnea-Hypopnea Index \(AHI\): *{target}', re.I),
+        NoteAhi.YES,
+        None,
+        pre_find_impress,
+    ),
+    (
         re.compile(rf'\bp?AHI\s*(?:on\s*this\s*\w+\s*)?(?:{of_is_at_was}\s*)?{target}'),
         NoteAhi.YES,
         [is_not_overall_ahi, has_date_prefix],
         pre_impress_recommend,
+    ),
+    (
+        re.compile(rf'(?:'
+                   rf'Obstructive Sleep Apnea Syndrome'
+                   rf'|obstructive breathing events'
+                   rf'|negative home sleep apnea test'
+                   rf'|mild sleep apnea'
+                   rf')\W*'
+                   rf'(?:(?:(?:moderately|very)\s*)?(?:severe|mild|moderate)\W*)?'
+                   rf'(?:the\s*)?p?ahi\W*(?:{of_is_at_was}\s*)?{target}', re.I),
+        NoteAhi.YES,
+        None,
+        pre_impress_recommend,
+    ),
+    (
+        re.compile(rf'breathing\s*events\W*p?ahi\W*(?:{of_is_at_was}\s*)?{target}', re.I),
+        NoteAhi.YES,
+        None,
+        pre_comments_impress,
     ),
     (
         re.compile(rf'respiratory\s*indices\W*(?:summary\W*)?pahi[\s:]*{target}', re.I),

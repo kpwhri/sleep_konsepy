@@ -34,7 +34,7 @@ has_date_pat = re.compile(
 
 
 def has_date_prefix(*, m, text, postcontext, **_):
-    if has_date_pat.search(text[max(0, m.start()-75):]):
+    if has_date_pat.search(text[max(0, m.start() - 75):m.start()]):
         return SKIP
     elif has_date_pat.search(postcontext):
         return SKIP
