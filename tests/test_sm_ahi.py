@@ -28,6 +28,8 @@ from sleep_konsepy.concepts.sm_ahi import RUN_REGEXES_FUNC
     ('normal AHI is <5', None),
     ('Apnea/Hypopnea Index (AHI) (which is the sleep apnea event rate) of 20.1 events per hour', 20.1),
     ('1999: This led to an overall PAHI of 20.1', None),
+    ('The sleep study showed an Apnea/Hypopnea Index (AHI) (which is the sleep apnea event rate) of 20.1 events per hour',
+     20.1),
     ('AHI 15-65', None),
 ])
 def test_sm_ahi_all(text, exp):

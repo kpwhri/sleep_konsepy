@@ -52,6 +52,13 @@ REGEXES = [
         [is_invalid_test_around, has_date_prefix],
     ),
     (
+        re.compile(
+            rf'ahi\W*which\s*is\s*the\s*sleep\s*apnea\s*event\s*rate\W*of\s*{target}',
+            re.I,
+        ),
+        SmAhi.YES,
+    ),
+    (
         re.compile(rf'overall\s*pahi\s*{of_is_at_was}\s*{target}'),
         SmAhi.YES,
         [has_date_prefix],
