@@ -1,6 +1,6 @@
 [project]
 name = "sleep_konsepy"
-version = "0.1.0"
+version = "1.0.0"
 description = "Konsepy NLP for extracting sleep scores (mostly AHI)."
 requires-python = ">=3.11"
 dependencies = [

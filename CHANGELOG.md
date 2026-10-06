@@ -18,8 +18,12 @@ Types of changes:
 
 ## [Unreleased]
 
+## [1.0.0]
+
 ### Added
 
 * Baseline AHI/ESS implementations
 * Custom/local implementation
 * Extensive testing
+
+[1.0.0]: https://github.com/kpwhri/sleep_konsepy/releases/tag/v1.0.0
